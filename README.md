@@ -29,6 +29,7 @@ file:C:\Users\User\Documents\test.txt=This is the content of the file
 file:C:\Users\User\Documents\test.txt
 # Notice the registry entry needs to start with HKEY_CURRENT_USER, this can be any other hive but full name is required
 registry:HKEY_CURRENT_USER\SOFTWARE\Test=password|john
+# Example mutex
 mutex:thisisabadmutex
 # This won't run Windows calc.exe, but rather a skeleton process with the name requested
 process:calc.exe
