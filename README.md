@@ -9,16 +9,16 @@ This program rapidly sets up a malware analysis environment based on configurati
 Configuration file can contain the following lines:
 
 To create a file:
-file:<path>=<content>   (<content> is optional) 
+file:path=content   (content is optional) 
 
 To create a registry key:
-registry:<key>=<value>|<data>   (<value>|<data> is optional) 
+registry:key=value|data   (value|data is optional) 
 
 To launch a process with specific name:
-process:<process name> 
+process:process name
 
 To create a mutex:
-mutex:<mutex name> 
+mutex:mutex name
 
 Lines beginning with # are ignored as comments
 
