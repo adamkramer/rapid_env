@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License 
     along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 	 
-	Created by Adam Kramer [2015] - Email: adamkramer at hotmail dot com */
+	Created by Adam Kramer [2014] - Email: adamkramer at hotmail dot com */ 
 
 #include "stdafx.h"
 #include "stdio.h"
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 		if (*cInput == '#') continue;
 
 		/* Format data read into the variables, command type, value and optional extra parameter */
-		if (swscanf(cInput, L"%[^:]:%[^=]=%[^\r\n]", cCommand, cValue, cOptional) < 2){
+		if (swscanf_s(cInput, L"%[^:]:%[^=]=%[^\r\n]", cCommand, _countof(cCommand), cValue, _countof(cValue), cOptional, _countof(cOptional)) < 2){
 			printf("Info: Ignoring invalid configuration entry\n");
 			continue;
 		}
@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
 
 			} else {
 
-			FILE* fTemp = _wfopen(cValue, L"w");
+			FILE* fTemp;
+			_wfopen_s(&fTemp, cValue, L"w");
 
 			if (fTemp)
 				wprintf(L"Success: File %s created\n", cValue);
@@ -194,7 +195,7 @@ int main(int argc, char *argv[])
 			ZeroMemory( &pi, sizeof(pi) );
 	
 			/* Launch process and delete temp file */
-			HRESULT hTemp2 = CreateProcess(NULL, wTempPath, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+			CreateProcess(NULL, wTempPath, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
 			DeleteFile(wTempPath);
 			
 		/* Process 'mutex' command (creates mutex) */
@@ -209,7 +210,8 @@ int main(int argc, char *argv[])
 			else
 				wprintf(L"Error: Mutex %s could not be created\n", cValue);
 
-		} else {
+		} else if (!bUndo) {
+			/* Supress these messages in undo mode */
 			printf("Info: Ignoring invalid configuration entry\n");
 		}
 
