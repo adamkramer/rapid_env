@@ -15,31 +15,40 @@
 
 #include "stdafx.h"
 #include "stdio.h"
-#include "string.h"
 #include "windows.h"
 
 int main(int argc, char *argv[])
 {
 	printf("      *** rapid_env - Created by Adam Kramer [2015] ***\n");
 	printf("-----------------------------------------------------------\n");
-	printf("This program rapidly sets up a malware analysis environment\n");
-	printf("based on configuration file specified by the user\n\n");
-	printf("Configuration file can contain the following lines:\n");
-	printf("*** To create a file ***\n");
-	printf("file:<path>=<content>   (<content> is optional)\n");
-	printf("*** To create a registry key ***\n");
-	printf("registry:<key>=<value>|<data>   (<value>|<data> is optional)\n");
-	printf("*** To launch a process with specific name ***\n");	
-	printf("process:<process name>\n");
-	printf("*** To create a mutex ***\n");
-	printf("mutex:<mutex name>\n");
-	printf("## Lines beginning with # are ignored as comments ##\n\n");
 
 	if (argc < 2) {
-		printf("Usage: rapid_env.exe <config file> [undo]\n");
-		return 1;
-	}
 	
+		printf("This program rapidly sets up a malware analysis environment\n");
+		printf("based on configuration file specified by the user\n\n");
+		printf("Configuration file can contain the following lines:\n");
+		printf("*** To create a file ***\n");
+		printf("file:<path>=<content>   (<content> is optional)\n");
+		printf("*** To create a registry key ***\n");
+		printf("registry:<key>=<value>|<data>   (<value>|<data> is optional)\n");
+		printf("*** To launch a process with specific name ***\n");	
+		printf("process:<process name>\n");
+		printf("*** To create a mutex ***\n");
+		printf("mutex:<mutex name>\n");
+		printf("## Lines beginning with # are ignored as comments ##\n\n");
+		printf("Usage: rapid_env.exe <config file> [undo]\n");
+	
+		return 0;
+	}
+
+	/* This launches the application in 'Skeleton mode' - which is used when launching a named process */
+	if (!_strcmpi(argv[1], "!skeleton!"))
+	{
+		wprintf(L"Launching in skeleton mode - no further action will be taken\n");
+		for (;;) 
+			Sleep(10000);
+	}
+
 	/* Variables:
 		bKeepActive - This is used to identify whether the program needs to remain open
 					  Will be made true if subprocesses or mutex are created
@@ -69,8 +78,8 @@ int main(int argc, char *argv[])
 	/* Configuration file reading loop */
 	while (fgetws(cInput, sizeof(cInput), fp)) {
 		
-		/* If the first character is a #, this is a comment line, so skip */
-		if (*cInput == '#') continue;
+		/* If the first character is a #, this is a comment line, so skip (or  blank lines) */
+		if (*cInput == '#' || *cInput == '\r' || *cInput == '\n') continue;
 
 		/* Format data read into the variables, command type, value and optional extra parameter */
 		if (swscanf_s(cInput, L"%[^:]:%[^=]=%[^\r\n]", cCommand, _countof(cCommand), cValue, _countof(cValue), cOptional, _countof(cOptional)) < 2){
@@ -136,21 +145,62 @@ int main(int argc, char *argv[])
 				hKey = HKEY_USERS;
 				
 			/* Variable to now hold subkey */
-			wchar_t* cKey = wcschr(cValue, L'\\');
-			cKey++;
+			wchar_t* wSubKey = wcschr(cValue, L'\\');
+			wSubKey++;
 			
 			/* If undo mode is active, delete the key */
 			if (bUndo) {
 
-				if(!RegDeleteKey(hKey, cKey))
-					wprintf(L"Success: Registry key %s removed\n", cValue);
-				else
-					wprintf(L"Error: Registry key %s could not be removed\n", cValue);
+				/* If a value is defined, only delete that */
+				if (cOptional[0] != '\0') {
+
+					/* Just the value, not value|data */
+					wchar_t* wKeyValue = wcschr(cOptional, L'|');
+					wKeyValue[0] = '\0';
+
+					/* hKey_Opened is handle to open key */
+					HKEY hKey_Opened = NULL;
+					RegOpenKey(hKey, wSubKey, &hKey_Opened);
+
+					if(!RegDeleteValue(hKey_Opened, cOptional))
+						wprintf(L"Success: Registry value %s in key %s removed\n", cOptional, cValue);
+					else
+						wprintf(L"Error: Registry value %s in key %s could not be removed\n", cOptional, cValue);
+
+					/* Check if key has any values left over */
+
+					DWORD dSubKeys = NULL, dValues = NULL;
+					RegQueryInfoKey(hKey_Opened, NULL, NULL, NULL, &dSubKeys, NULL, NULL, &dValues, NULL, NULL, NULL, NULL);
+
+					/* Size of 'Default' value in key - 0 indicates '(Not set)' */
+					DWORD lpdDefaultSize = 0;
+					RegQueryValueEx(hKey_Opened, NULL, NULL, NULL, NULL, &lpdDefaultSize);
+
+					if (!dSubKeys && !dValues && !lpdDefaultSize) {
+			
+						wprintf(L"Info: No remaining sub keys, values and no set default, deleting key...\n");
+
+						if(!RegDeleteKey(hKey, wSubKey))
+							wprintf(L"Success: Registry key %s removed\n", cValue);
+						else
+							wprintf(L"Error: Registry key %s could not be removed\n", cValue);
+					
+					}
+				
+				/* Else, delete the whole key */
+				} else {
+
+					if(!RegDeleteKey(hKey, wSubKey))
+						wprintf(L"Success: Registry key %s removed\n", cValue);
+					else
+						wprintf(L"Error: Registry key %s could not be removed\n", cValue);
+
+				}
 
 			} else {
 
 			/* Attempt to create key */
-				if (!RegCreateKeyEx(hKey, cKey, 0, NULL, 0, KEY_WRITE, NULL, &hKey, NULL))
+				if (!RegCreateKeyEx(hKey, wSubKey, 0, NULL, 0, KEY_WRITE, NULL, &hKey, NULL))
 					wprintf(L"Success: Registry key %s created\n", cValue);
 				else
 					wprintf(L"Error: Registry key %s could not be created\n", cValue);
@@ -180,12 +230,15 @@ int main(int argc, char *argv[])
 			/* Create path for temp executable */
 			wchar_t wTempPath[MAX_PATH];
 			GetTempPath(MAX_PATH, wTempPath);
-			
-			wcsncat_s(wTempPath, MAX_PATH, L"\\", 1);
+
 			wcsncat_s(wTempPath, MAX_PATH, cValue, sizeof(cValue));
 
 			/* Copy self to temp path with specified name */
-			CopyFile(pFile, wTempPath, TRUE);
+			CopyFile(pFile, wTempPath, FALSE);
+
+			/* Now add the 'skeleton' parameter */
+			wchar_t* wPreArgvAddition = wcschr(wTempPath, L'\0');
+			wcsncat_s(wTempPath, MAX_PATH, L" !skeleton!\0", 12);
 
 			STARTUPINFO si;
 			PROCESS_INFORMATION pi;
@@ -194,9 +247,18 @@ int main(int argc, char *argv[])
 			si.cb = sizeof(si);
 			ZeroMemory( &pi, sizeof(pi) );
 	
-			/* Launch process and delete temp file */
-			CreateProcess(NULL, wTempPath, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
-			DeleteFile(wTempPath);
+			/* Job object hack to ensure 'child process' is terminated when the main one closes */
+			HANDLE ghJob = CreateJobObject( NULL, NULL);
+			JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+			jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+			SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
+
+			if (!CreateProcess(NULL, wTempPath, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+				wprintf(L"Error: Process %s could not be created\n", cValue);
+			else {
+				AssignProcessToJobObject(ghJob, pi.hProcess);
+				wprintf(L"Success: Process %s created\n", cValue);
+			}
 			
 		/* Process 'mutex' command (creates mutex) */
 		} else if (!bUndo && !_wcsicmp(cCommand, L"mutex")) {
