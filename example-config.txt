@@ -1,0 +1,146 @@
+# This is an example configuration file for rapid_env
+# 
+# The entries below can be used to simulate sandbox environments and were found as part of 'pafish'
+# which is an interesting tool which and can be found at the following site: https://github.com/a0rtega/pafish/
+
+# ********************************************************************************************
+# WARNING: READ THIS FIRST!        WARNING: READ THIS FIRST!         WARNING: READ THIS FIRST!
+# 
+# These entries will OVERWRITE FILES and ALTER REGISTRY ENTRIES
+# The undo option will DELETE THE FILES and REGISTRY KEYS listed
+#
+# For example, if you use the VMWARE options within a VMWARE VM it will OVERWRITE the valid SYS files and BREAK THINGS
+# 
+# All the UNDO option does is DELETE FILES AND REGISTRY KEYS <---- This is dangerous if the registry keys actually matter!!
+#
+# This program is not designed to run in a production environment - it might BREAK THINGS!! 
+# *** Please use a virtualised environment which can easily revert to a previous snapshot ***
+
+
+# PLEASE DO NOT UNCOMMENT ANY OF THE LINES BELOW UNLESS YOU HAVE READ THE ABOVE AND KNOW WHAT YOU'RE DOING!
+# PLEASE DO NOT UNCOMMENT ANY OF THE LINES BELOW UNLESS YOU HAVE READ THE ABOVE AND KNOW WHAT YOU'RE DOING!
+# PLEASE DO NOT UNCOMMENT ANY OF THE LINES BELOW UNLESS YOU HAVE READ THE ABOVE AND KNOW WHAT YOU'RE DOING!
+
+
+##################################
+# VMWARE - 
+################################## 
+
+# VMWARE registry identifier 1 - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\Scsi\Scsi Port 0\Scsi Bus 0\Target Id 0\Logical Unit Id 0=Identifier|VMWARE
+
+# VMWARE registry identifier 2
+#registry:HKEY_LOCAL_MACHINE\SOFTWARE\VMware, Inc.\VMware Tools
+
+# VMWARE file system identifier 1
+#file:C:\WINDOWS\system32\drivers\vmmouse.sys
+
+# VMWARE file system identifier 2
+#file:C:\WINDOWS\system32\drivers\vmhgfs.sys
+
+##################################
+# QEMU - 
+##################################
+
+# QEMU registry identifier 1  - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\Scsi\Scsi Port 0\Scsi Bus 0\Target Id 0\Logical Unit Id 0=Identifier|QEMU
+
+# QEMU registry identifier 2  - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\Description\System=SystemBiosVersion|QEMU
+
+##################################
+# Virtual Box - 
+################################## 
+
+# Virtual Box registry identifier 1  - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\Scsi\Scsi Port 0\Scsi Bus 0\Target Id 0\Logical Unit Id 0=Identifier|VBOX
+
+# Virtual Box registry identifier 2  - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\Description\System=SystemBiosVersion|VBOX
+
+# Virtual Box registry identifier 3
+#registry:HKEY_LOCAL_MACHINE\SOFTWARE\Oracle\VirtualBox Guest Additions
+
+# Virtual Box registry identifier 4  - ** DO NOT USE UNDO MODE WITH THIS CONFIG OPTION - IT WILL DELETE THE REGISTRY KEY **
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\Description\System=VideoBiosVersion|VIRTUALBOX
+
+# Virtual Box registry identifier 5
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\ACPI\DSDT\VBOX__
+
+# Virtual Box registry identifier 6
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\ACPI\FADT\VBOX__
+
+# Virtual Box registry identifier 7
+#registry:HKEY_LOCAL_MACHINE\HARDWARE\ACPI\RSDT\VBOX__
+
+# Virtual Box registry identifier 8
+#registry:HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\VBoxGuest
+
+# Virtual Box registry identifier 9
+#registry:HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\VBoxMouse
+
+# Virtual Box registry identifier 10
+#registry:HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\VBoxService
+
+# Virtual Box registry identifier 11
+#registry:HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\VBoxSF
+
+# Virtual Box registry identifier 12
+#registry:HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\VBoxVideo
+
+# Virtual Box file system identifier 1
+#file:C:\WINDOWS\system32\drivers\VBoxMouse.sys
+
+# Virtual Box file system identifier 2
+#file:C:\WINDOWS\system32\drivers\VBoxGuest.sys
+
+# Virtual Box file system identifier 3
+#file:C:\WINDOWS\system32\drivers\VBoxSF.sys
+
+# Virtual Box file system identifier 4
+#file:C:\WINDOWS\system32\drivers\VBoxVideo.sys
+
+# Virtual Box file system identifier 5
+#file:C:\WINDOWS\system32\vboxdisp.dll
+
+# Virtual Box file system identifier 6
+#file:C:\WINDOWS\system32\vboxhook.dll
+
+# Virtual Box file system identifier 7
+#file:C:\WINDOWS\system32\vboxmrxnp.dll
+
+# Virtual Box file system identifier 8
+#file:C:\WINDOWS\system32\vboxogl.dll
+
+# Virtual Box file system identifier 9
+#file:C:\WINDOWS\system32\vboxoglarrayspu.dll
+
+# Virtual Box file system identifier 10
+#file:C:\WINDOWS\system32\vboxoglcrutil.dll
+
+# Virtual Box file system identifier 11
+#file:C:\WINDOWS\system32\vboxoglerrorspu.dll
+
+# Virtual Box file system identifier 12
+#file:C:\WINDOWS\system32\vboxoglfeedbackspu.dll
+
+# Virtual Box file system identifier 13
+#file:C:\WINDOWS\system32\vboxoglpackspu.dll
+
+# Virtual Box file system identifier 14
+#file:C:\WINDOWS\system32\vboxoglpassthroughspu.dll
+
+# Virtual Box file system identifier 15
+#file:C:\WINDOWS\system32\vboxservice.exe
+
+# Virtual Box file system identifier 16
+#file:C:\WINDOWS\system32\vboxtray.exe
+
+# Virtual Box file system identifier 17
+#file:C:\WINDOWS\system32\VBoxControl.exe
+
+# Virtual Box process identifier 1
+#process:vboxservice.exe
+
+# Virtual Box process identifier 2
+#process:vboxtray.exe
